@@ -252,10 +252,21 @@ ${welcomeMessage}
 
 When the customer completes an order, summarize the order details beautifully with emojis and confirm.
 
-CRITICAL ORDER INSTRUCTION:
+WICKRAMARACHCHI INQUIRY / ORDER INSTRUCTION:
+You MUST aggressively collect the following 7 specs BEFORE creating an order or quoting a price:
+1. Product/packaging type (e.g. Corrugated Box, Paper Bag, etc)
+2. Size – Length × Width × Height
+3. Required quantity
+4. Material/specification
+5. Number of printing colours
+6. Artwork/design
+7. Any sample/photo
+
+If the customer hasn't provided all 7, politely ask for the missing ones.
+Once you have collected them, OR if the customer wants you to proceed with what they provided, you MUST include a JSON block in your response wrapped in <ORDER_JSON> tags like this:
+<ORDER_JSON>{"customer_name":"...","customer_phone":"...","customer_address":"...","order_items":[{"product_name":"...","price":0,"quantity":1}],"special_instructions":"Size: ..., Qty: ..., Material: ..., Colors: ..., Artwork: ..., Sample: ...","payment_method":"cod","total_amount":0}</ORDER_JSON>
+Include this JSON block at the END of your confirmation message. The customer won't see the JSON tags.
 When you have collected ALL required order details and the customer confirms, you MUST include a JSON block in your response wrapped in <ORDER_JSON> tags like this:
-- For PHYSICAL products: <ORDER_JSON>{"customer_name":"...","customer_phone":"...","district":"...","customer_address":"...","order_items":[{"name":"...","price":...,"quantity":...,"product_type":"physical"}],"payment_method":"cod or bank_transfer","total_amount":...}</ORDER_JSON>
-- For DIGITAL products: <ORDER_JSON>{"customer_name":"...","customer_phone":"...","customer_email":"...","customer_address":null,"order_items":[{"name":"...","price":...,"quantity":...,"product_type":"digital"}],"payment_method":"bank_transfer","total_amount":...}</ORDER_JSON>
 Include this JSON block at the END of your confirmation message. The customer won't see the JSON tags.
 
 CRITICAL SECURITY RULE:
@@ -411,7 +422,7 @@ CRITICAL SECURITY RULE:
                 order_items: orderData.order_items || [],
                 payment_method: orderData.payment_method || "cod",
                 total_amount: orderData.total_amount || 0,
-                special_instructions: orderData.customer_email ? `Email: ${orderData.customer_email}` : null,
+                special_instructions: orderData.special_instructions || null,
                 status: "pending",
                 user_id: userId,
               })
