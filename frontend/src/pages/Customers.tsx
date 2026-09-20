@@ -20,6 +20,7 @@ interface OrderRecord {
   status: string;
   order_items: any;
   special_instructions: string;
+  feedback: string;
 }
 
 export default function Customers() {
@@ -159,7 +160,14 @@ export default function Customers() {
                                     <div className="mt-2 p-3 bg-muted rounded-md text-sm whitespace-pre-wrap">
                                       {specs}
                                     </div>
-                                  </div>
+                                    {order.feedback && (
+                                    <div>
+                                      <p className="text-sm font-semibold mt-4 text-primary">Customer Feedback</p>
+                                      <div className="mt-2 p-3 bg-primary/10 rounded-md text-sm whitespace-pre-wrap italic">
+                                        "{order.feedback}"
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               </DialogContent>
                             </Dialog>
