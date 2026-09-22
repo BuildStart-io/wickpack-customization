@@ -286,7 +286,10 @@ CRITICAL INSTRUCTIONS FOR SYSTEM ACTIONS:
     ];
 
     if (conversationHistory && conversationHistory.length > 0) {
-      for (const msg of conversationHistory as ConversationMessage[]) {
+      // History is ordered newest first. 
+      // The current message is at index 0 (already stored in DB). We slice it out and reverse.
+      const chronological = [...conversationHistory].slice(1).reverse();
+      for (const msg of chronological as ConversationMessage[]) {
         messages.push({
           role: msg.direction === "inbound" ? "user" : "assistant",
           content: msg.message,
@@ -312,7 +315,7 @@ CRITICAL INSTRUCTIONS FOR SYSTEM ACTIONS:
     // ------------------------------------------------------------------
     const aiGenerateUrl = Deno.env.get("AI_GENERATE_URL");
     const botApiKey = Deno.env.get("BOT_API_KEY");
-    const MODEL = "openai/gpt-4o-mini";
+    const MODEL = "google/gemini-3-flash-preview";
     const MAX_TOKENS = 500;
 
     let aiResponse: Response;
