@@ -158,7 +158,25 @@ export default function Customers() {
                                   <div>
                                     <p className="text-sm font-semibold">Full Specifications</p>
                                     <div className="mt-2 p-3 bg-muted rounded-md text-sm whitespace-pre-wrap">
-                                      {specs}
+                                      {(() => {
+                                        try {
+                                          const parsed = typeof specs === 'string' && specs.trim().startsWith('{') ? JSON.parse(specs) : null;
+                                          if (parsed && typeof parsed === 'object') {
+                                            return (
+                                              <ul className="space-y-1">
+                                                {Object.entries(parsed).map(([key, value]) => (
+                                                  <li key={key}>
+                                                    <span className="font-semibold">{key}:</span> {String(value)}
+                                                  </li>
+                                                ))}
+                                              </ul>
+                                            );
+                                          }
+                                        } catch (e) {
+                                          // fallback to raw string if it's not valid JSON
+                                        }
+                                        return specs;
+                                      })()}
                                     </div>
                                     {order.feedback && (
                                     <div>

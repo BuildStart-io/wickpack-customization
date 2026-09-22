@@ -425,7 +425,29 @@ export default function Orders() {
                 {selectedOrder.special_instructions && (
                   <div className="space-y-2">
                     <h4 className="font-medium text-sm text-muted-foreground">Special Instructions</h4>
-                    <p className="text-sm bg-muted p-3 rounded-lg">{selectedOrder.special_instructions}</p>
+                    <div className="text-sm bg-muted p-3 rounded-lg whitespace-pre-wrap">
+                      {(() => {
+                        try {
+                          const parsed = typeof selectedOrder.special_instructions === 'string' && selectedOrder.special_instructions.trim().startsWith('{') 
+                            ? JSON.parse(selectedOrder.special_instructions) 
+                            : null;
+                          if (parsed && typeof parsed === 'object') {
+                            return (
+                              <ul className="space-y-1">
+                                {Object.entries(parsed).map(([key, value]) => (
+                                  <li key={key}>
+                                    <span className="font-semibold">{key}:</span> {String(value)}
+                                  </li>
+                                ))}
+                              </ul>
+                            );
+                          }
+                        } catch (e) {
+                          // fallback
+                        }
+                        return selectedOrder.special_instructions;
+                      })()}
+                    </div>
                   </div>
                 )}
 
