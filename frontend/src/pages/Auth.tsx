@@ -28,11 +28,22 @@ export default function Auth() {
 
       if (error) throw error;
 
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('role', 'super_admin')
+        .maybeSingle();
+
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
-      navigate("/dashboard");
+      
+      if (roleData?.role === 'super_admin') {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error: any) {
       toast({
         title: "Login failed",

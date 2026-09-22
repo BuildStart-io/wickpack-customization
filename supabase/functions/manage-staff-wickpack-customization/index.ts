@@ -27,6 +27,7 @@ serve(async (req) => {
 
     const token = authHeader.replace("Bearer ", "");
     const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+      db: { schema: 'wickpack_customization' },
       global: { headers: { Authorization: authHeader } },
     });
     const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token);
