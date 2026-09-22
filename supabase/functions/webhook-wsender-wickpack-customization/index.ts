@@ -170,15 +170,15 @@ serve(async (req) => {
     }
 
     // Fire-and-forget trigger process-message (cron is the safety net)
-    fetch(`${supabaseUrl}/functions/v1/process-message`, {
+    fetch(`${supabaseUrl}/functions/v1/process-message-wickpack-customization`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${supabaseAnonKey}`,
       },
-      body: JSON.stringify({ trigger: "webhook", correlationId }),
+      body: JSON.stringify({ trigger: "webhook" }),
     }).catch((err) => {
-      console.warn(`[${correlationId}] Trigger failed:`, err.message);
+      console.error("Failed to trigger process-message:", err.message);
     });
 
     return new Response(
