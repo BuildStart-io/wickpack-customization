@@ -110,8 +110,9 @@ serve(async (req) => {
 
     const ordersLimitReached = (ordersCount || 0) >= ordersLimit;
 
-    const products = productsRes.data || [];
+    const products = productsRes.data || []; if(productsRes.error) console.error("PRODUCTS DB ERROR:", productsRes.error);
     const faqs = faqsRes.data || [];
+    console.log(`DEBUG: Fetched ${products.length} products and ${faqs.length} faqs for user ${userId}`);
     const settings = settingsRes.data || [];
 
     const welcomeMessage = settings.find(s => s.key === "welcome_message")?.value?.text || "Welcome! How can I help you?";
@@ -311,7 +312,7 @@ CRITICAL INSTRUCTIONS FOR SYSTEM ACTIONS:
     // ------------------------------------------------------------------
     const aiGenerateUrl = Deno.env.get("AI_GENERATE_URL");
     const botApiKey = Deno.env.get("BOT_API_KEY");
-    const MODEL = "google/gemini-3-flash-preview";
+    const MODEL = "openai/gpt-4o-mini";
     const MAX_TOKENS = 500;
 
     let aiResponse: Response;
