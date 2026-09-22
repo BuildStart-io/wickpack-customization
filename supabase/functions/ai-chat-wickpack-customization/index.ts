@@ -110,7 +110,11 @@ serve(async (req) => {
 
     const ordersLimitReached = (ordersCount || 0) >= ordersLimit;
 
-    const products = productsRes.data || []; if(productsRes.error) console.error("PRODUCTS DB ERROR:", productsRes.error);
+    const products = productsRes.data || [];
+    if (productsRes.error) {
+      console.error(`[CRITICAL] Failed to fetch products for user ${userId}:`, productsRes.error);
+    }
+    console.log(`[DEBUG] Fetched ${products.length} active products for user ${userId}`);
     const faqs = faqsRes.data || [];
     console.log(`DEBUG: Fetched ${products.length} products and ${faqs.length} faqs for user ${userId}`);
     const settings = settingsRes.data || [];
@@ -228,7 +232,9 @@ ${(() => {
   }
   return `  Bank: ${paymentInfo.bank_name || "Not configured"}, Account: ${paymentInfo.account_number || "Not configured"}, Name: ${paymentInfo.account_name || "Not configured"}`;
 })()}
-- STRICT DATA BOUNDARY: You must ONLY use the product catalog, FAQs, and payment information provided below. Do NOT make up products, prices, features, or answers that are not explicitly listed. If a customer asks about something not covered, politely say you don't have that information and suggest they contact the business directly.
+- STRICT DATA BOUNDARY: You must ONLY use the product catalog, FAQs, and payment information provided below. Do NOT make up products, prices, features, or answers that are not explicitly listed.
+- NEVER REFUSE TO LIST PRODUCTS: If the customer asks "what products do you have" or asks for your product list, you MUST list the products from the PRODUCT CATALOG below. Do NOT say the list is unavailable or not recorded in the system. Group them concisely if there are many.
+- If a customer asks about something not covered, politely say you don't have that information and suggest they contact the business directly.
 
 PRODUCT IMAGES:
 - When a customer asks about a specific product that has images, include ALL the image URLs in separate <IMAGE_URL>url</IMAGE_URL> tags at the END of your response. Include all images for the product to give them a complete view.
