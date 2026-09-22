@@ -64,8 +64,7 @@ export default function AdminSettings() {
     setSaving(true);
     const { error } = await supabase
       .from("platform_settings" as any)
-      .update({ value: limits as any })
-      .eq("key", "plan_limits");
+      .upsert({ key: "plan_limits", value: limits as any }, { onConflict: "key" });
 
     if (error) {
       toast({ title: "Error saving", description: error.message, variant: "destructive" });
