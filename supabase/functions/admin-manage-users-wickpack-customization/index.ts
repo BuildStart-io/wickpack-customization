@@ -95,14 +95,21 @@ serve(async (req) => {
         }
 
         // Update profile with business info and plan
-        const planLimits = getPlanLimits(planTier || "free");
+        const { data: limitsData } = await supabase
+          .from("platform_settings")
+          .select("value")
+          .eq("key", "plan_limits")
+          .single();
+        const allLimits = limitsData?.value || {};
+        const planLimits = allLimits[planTier || "free"] || { max_products: 5, max_faqs: 10 };
+
         await supabase
           .from("profiles")
           .update({
             business_name: businessName || null,
             plan_tier: planTier || "free",
-            max_products: planLimits.maxProducts,
-            max_faqs: planLimits.maxFaqs,
+            max_products: planLimits.max_products,
+            max_faqs: planLimits.max_faqs,
           })
           .eq("user_id", newUser.user.id);
 
@@ -132,14 +139,21 @@ serve(async (req) => {
         }
 
         // Update profile
-        const invPlanLimits = getPlanLimits(invPlan || "free");
+        const { data: invLimitsData } = await supabase
+          .from("platform_settings")
+          .select("value")
+          .eq("key", "plan_limits")
+          .single();
+        const invAllLimits = invLimitsData?.value || {};
+        const invPlanLimits = invAllLimits[invPlan || "free"] || { max_products: 5, max_faqs: 10 };
+
         await supabase
           .from("profiles")
           .update({
             business_name: invBizName || null,
             plan_tier: invPlan || "free",
-            max_products: invPlanLimits.maxProducts,
-            max_faqs: invPlanLimits.maxFaqs,
+            max_products: invPlanLimits.max_products,
+            max_faqs: invPlanLimits.max_faqs,
           })
           .eq("user_id", invitedUser.user.id);
 
@@ -172,9 +186,16 @@ serve(async (req) => {
         if (addon_staff !== undefined) updateData.addon_staff = addon_staff;
         if (updPlan) {
           updateData.plan_tier = updPlan;
-          const limits = getPlanLimits(updPlan);
-          updateData.max_products = limits.maxProducts;
-          updateData.max_faqs = limits.maxFaqs;
+          const { data: updLimitsData } = await supabase
+            .from("platform_settings")
+            .select("value")
+            .eq("key", "plan_limits")
+            .single();
+          const updAllLimits = updLimitsData?.value || {};
+          const limits = updAllLimits[updPlan] || { max_products: 5, max_faqs: 10 };
+          
+          updateData.max_products = limits.max_products;
+          updateData.max_faqs = limits.max_faqs;
         }
 
         const { error: updateError } = await supabase
@@ -440,14 +461,3 @@ serve(async (req) => {
   }
 });
 
-function getPlanLimits(tier: string) {
-  switch (tier) {
-    case "enterprise":
-      return { maxProducts: 999, maxFaqs: 999 };
-    case "pro":
-      return { maxProducts: 50, maxFaqs: 100 };
-    case "free":
-    default:
-      return { maxProducts: 5, maxFaqs: 10 };
-  }
-}
