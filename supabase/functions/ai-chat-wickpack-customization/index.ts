@@ -396,8 +396,19 @@ CRITICAL INSTRUCTIONS FOR SYSTEM ACTIONS:
         console.log(`Orders limit reached for user ${userId}: ${ordersCount}/${ordersLimit}`);
       } else {
         try {
-          const orderData = JSON.parse(orderJsonMatch[1]);
+          let rawJson = orderJsonMatch[1].trim();
+          if (rawJson.startsWith("```json")) {
+            rawJson = rawJson.replace(/^```json/, "").replace(/```$/, "").trim();
+          } else if (rawJson.startsWith("```")) {
+            rawJson = rawJson.replace(/^```/, "").replace(/```$/, "").trim();
+          }
+          const orderData = JSON.parse(rawJson);
           console.log("Saving order to database:", JSON.stringify(orderData));
+
+          let pm = String(orderData.payment_method || "cod").toLowerCase();
+          if (pm !== "cod" && pm !== "bank_transfer") {
+            pm = "cod";
+          }
 
           // Deduplication: check if a similar order was created in the last 5 minutes
           const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
@@ -421,7 +432,7 @@ CRITICAL INSTRUCTIONS FOR SYSTEM ACTIONS:
                 district: orderData.district || null,
                 customer_address: orderData.customer_address || null,
                 order_items: orderData.order_items || [],
-                payment_method: orderData.payment_method || "cod",
+                payment_method: pm,
                 total_amount: orderData.total_amount || 0,
                 special_instructions: orderData.special_instructions || null,
                 status: "pending",
