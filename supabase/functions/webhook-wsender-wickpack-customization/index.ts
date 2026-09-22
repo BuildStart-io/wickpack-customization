@@ -32,8 +32,12 @@ serve(async (req) => {
   const correlationId = crypto.randomUUID();
 
   try {
-    const body = await req.json();
-    console.log(`[${correlationId}] WAHA webhook:`, JSON.stringify(body).substring(0, 600));
+    const rawBody = await req.text();
+    if (!rawBody || !rawBody.trim()) {
+      return new Response("ok", { headers: corsHeaders });
+    }
+    const body = JSON.parse(rawBody);
+    console.log(`[${correlationId}] WAHA webhook:`, rawBody.substring(0, 600));
 
     const event = body?.event;
     const sessionName = body?.session;

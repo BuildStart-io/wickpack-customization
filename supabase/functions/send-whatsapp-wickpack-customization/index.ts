@@ -60,7 +60,13 @@ serve(async (req) => {
   }
 
   try {
-    const { to, message, sessionApiKey, imageUrl, mediaUrl, mediaType: explicitType } = await req.json();
+    const rawBody = await req.text();
+    if (!rawBody || !rawBody.trim()) {
+      return new Response(JSON.stringify({ error: "Empty request body" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+    const { to, message, sessionApiKey, imageUrl, mediaUrl, mediaType: explicitType } = JSON.parse(rawBody);
 
     if (!to || (!message && !imageUrl && !mediaUrl)) {
       return new Response(
