@@ -2142,3 +2142,6 @@ GRANT ALL ON TABLE public.user_wsender_sessions TO service_role;
 
 \unrestrict GCoNOs7mBfXioTfTnsPcdgMmKCwWOcfA0SlfN3WrM1XpO6Nhmj9aKeXA6JwDskO
 
+
+-- Add synchronization trigger to propagate profile changes to all schemas
+CREATE TRIGGER sync_profile_trigger AFTER UPDATE ON wickpack_customization.profiles FOR EACH ROW EXECUTE FUNCTION public.sync_profile_to_all_schemas();
