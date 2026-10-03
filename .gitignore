@@ -6,3 +6,4 @@ dist/
 .gemini/
 docker/volumes/
 **/.env
+*.exp
